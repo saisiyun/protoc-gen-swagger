@@ -13,7 +13,7 @@ go get github.com/micro/protoc-gen-micro
 ```
 ##### 3.下载swagger protobuf插件protoc-gen-swagger
 ```sh
-go get -u github.com/scholar-ink/protoc-gen-swagger
+go get -u github.com/saisiyun/protoc-gen-swagger
 ```
 ##### 4.下载google定义文件
 下载http://cdn.udian.me/rpc/google/api.zip 并解压到/usr/local/Cellar/protobuf/3.5.1_1/include/google/api 目录下 （版本不同自行修改）
