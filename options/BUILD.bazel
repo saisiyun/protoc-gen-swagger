@@ -14,7 +14,7 @@ filegroup(
 go_library(
     name = "go_default_library",
     embed = [":options_go_proto"],
-    importpath = "github.com/scholar-ink/protoc-gen-swagger/options",
+    importpath = "github.com/saisiyun/protoc-gen-swagger/options",
 )
 
 proto_library(
