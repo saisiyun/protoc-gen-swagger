@@ -492,6 +492,8 @@ func primitiveSchema(t pbdescriptor.FieldDescriptorProto_Type) (ftype, format st
 		return "integer", "int32", true
 	case pbdescriptor.FieldDescriptorProto_TYPE_SINT64:
 		return "integer", "int64", true
+	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
+		return "integer", "int64", true
 	default:
 		return "", "", false
 	}
