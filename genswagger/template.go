@@ -60,10 +60,6 @@ var wktSchemas = map[string]schemaCore{
 		Type:   "boolean",
 		Format: "boolean",
 	},
-	".google.protobuf.EnumValue": schemaCore{
-		Type:   "integer",
-		Format: "int64",
-	},
 	".google.protobuf.Empty": schemaCore{},
 }
 
@@ -165,7 +161,7 @@ func queryParams(message *descriptor.Message, field *descriptor.Field, prefix st
 					Enum: listEnumNames(enum),
 				}
 			} else {
-				param.Type = "string"
+				param.Type = "integer"
 				param.Enum = listEnumNames(enum)
 				param.Default = getEnumDefault(enum)
 			}
