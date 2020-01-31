@@ -157,7 +157,7 @@ func queryParams(message *descriptor.Message, field *descriptor.Field, prefix st
 			}
 			if items != nil { // array
 				param.Items = &swaggerItemsObject{
-					Type: "integer",
+					Type: "string",
 					Enum: listEnumNames(enum),
 				}
 			} else {
@@ -492,6 +492,8 @@ func primitiveSchema(t pbdescriptor.FieldDescriptorProto_Type) (ftype, format st
 		return "integer", "int32", true
 	case pbdescriptor.FieldDescriptorProto_TYPE_SINT64:
 		return "integer", "int64", true
+	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
+		return "integer", "int64", true
 	default:
 		return "", "", false
 	}
@@ -692,17 +694,17 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 						} else {
 							return fmt.Errorf("only primitive and well-known types are allowed in path parameters")
 						}
-					case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-						paramType = "string"
-						paramFormat = ""
-						enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
-						if err != nil {
-							return err
-						}
-						enumNames = listEnumNames(enum)
-						schema := schemaOfField(parameter.Target, reg, customRefs)
-						desc = schema.Description
-						defaultValue = schema.Default
+					//case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
+					//	paramType = "string"
+					//	paramFormat = ""
+					//	enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
+					//	if err != nil {
+					//		return err
+					//	}
+					//	enumNames = listEnumNames(enum)
+					//	schema := schemaOfField(parameter.Target, reg, customRefs)
+					//	desc = schema.Description
+					//	defaultValue = schema.Default
 					default:
 						var ok bool
 						paramType, paramFormat, ok = primitiveSchema(pt)
