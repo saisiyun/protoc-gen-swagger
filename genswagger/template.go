@@ -392,7 +392,7 @@ func schemaOfField(f *descriptor.Field, reg *descriptor.Registry, refs refMap) s
 	var props *swaggerSchemaObjectProperties
 
 	switch ft := fd.GetType(); ft {
-	case pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
+	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM, pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
 		if wktSchema, ok := wktSchemas[fd.GetTypeName()]; ok {
 			core = wktSchema
 
@@ -401,7 +401,7 @@ func schemaOfField(f *descriptor.Field, reg *descriptor.Registry, refs refMap) s
 			}
 		} else {
 			core = schemaCore{
-				Ref: "#/definitions/" + fullyQualifiedNameToSwaggerName(fd.GetTypeName(), reg),
+				Ref: "#/definitions1/" + fullyQualifiedNameToSwaggerName(fd.GetTypeName(), reg),
 			}
 			if refs != nil {
 				refs[fd.GetTypeName()] = struct{}{}
@@ -694,17 +694,17 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 						} else {
 							return fmt.Errorf("only primitive and well-known types are allowed in path parameters")
 						}
-					case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-						paramType = "string"
-						paramFormat = ""
-						enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
-						if err != nil {
-							return err
-						}
-						enumNames = listEnumNames(enum)
-						schema := schemaOfField(parameter.Target, reg, customRefs)
-						desc = schema.Description
-						defaultValue = schema.Default
+					//case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
+					//	paramType = "string"
+					//	paramFormat = ""
+					//	enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
+					//	if err != nil {
+					//		return err
+					//	}
+					//	enumNames = listEnumNames(enum)
+					//	schema := schemaOfField(parameter.Target, reg, customRefs)
+					//	desc = schema.Description
+					//	defaultValue = schema.Default
 					default:
 						var ok bool
 						paramType, paramFormat, ok = primitiveSchema(pt)
