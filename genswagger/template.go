@@ -193,7 +193,7 @@ func findServicesMessagesAndEnumerations(s []*descriptor.Service, reg *descripto
 	for _, svc := range s {
 		for _, meth := range svc.Methods {
 			// Request may be fully included in query
-			if _, ok := refs[fmt.Sprintf("#/definitions5/%s", fullyQualifiedNameToSwaggerName(meth.RequestType.FQMN(), reg))]; ok {
+			if _, ok := refs[fmt.Sprintf("#/definitions/%s", fullyQualifiedNameToSwaggerName(meth.RequestType.FQMN(), reg))]; ok {
 				if !skipRenderingRef(meth.RequestType.FQMN()) {
 					m[fullyQualifiedNameToSwaggerName(meth.RequestType.FQMN(), reg)] = meth.RequestType
 				}
@@ -349,7 +349,7 @@ func renderMessagesAsStreamDefinition(messages messageMap, d swaggerDefinitionsO
 					Key: "result",
 					Value: swaggerSchemaObject{
 						schemaCore: schemaCore{
-							Ref: fmt.Sprintf("#/definitions6/%s", fullyQualifiedNameToSwaggerName(msg.FQMN(), reg)),
+							Ref: fmt.Sprintf("#/definitions/%s", fullyQualifiedNameToSwaggerName(msg.FQMN(), reg)),
 						},
 					},
 				},
@@ -357,7 +357,7 @@ func renderMessagesAsStreamDefinition(messages messageMap, d swaggerDefinitionsO
 					Key: "error",
 					Value: swaggerSchemaObject{
 						schemaCore: schemaCore{
-							Ref: fmt.Sprintf("#/definitions7/%s", fullyQualifiedNameToSwaggerName(".grpc.gateway.runtime.StreamError", reg)),
+							Ref: fmt.Sprintf("#/definitions/%s", fullyQualifiedNameToSwaggerName(".grpc.gateway.runtime.StreamError", reg)),
 						},
 					},
 				},
@@ -392,7 +392,7 @@ func schemaOfField(f *descriptor.Field, reg *descriptor.Registry, refs refMap) s
 	var props *swaggerSchemaObjectProperties
 
 	switch ft := fd.GetType(); ft {
-	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM, pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
+	case pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
 		if wktSchema, ok := wktSchemas[fd.GetTypeName()]; ok {
 			core = wktSchema
 
@@ -401,7 +401,7 @@ func schemaOfField(f *descriptor.Field, reg *descriptor.Registry, refs refMap) s
 			}
 		} else {
 			core = schemaCore{
-				Ref: "#/definitions8/" + fullyQualifiedNameToSwaggerName(fd.GetTypeName(), reg),
+				Ref: "#/definitions/" + fullyQualifiedNameToSwaggerName(fd.GetTypeName(), reg),
 			}
 			if refs != nil {
 				refs[fd.GetTypeName()] = struct{}{}
@@ -694,17 +694,17 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 						} else {
 							return fmt.Errorf("only primitive and well-known types are allowed in path parameters")
 						}
-					//case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-					//	paramType = "string"
-					//	paramFormat = ""
-					//	enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
-					//	if err != nil {
-					//		return err
-					//	}
-					//	enumNames = listEnumNames(enum)
-					//	schema := schemaOfField(parameter.Target, reg, customRefs)
-					//	desc = schema.Description
-					//	defaultValue = schema.Default
+					case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
+						paramType = "string"
+						paramFormat = ""
+						enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
+						if err != nil {
+							return err
+						}
+						enumNames = listEnumNames(enum)
+						schema := schemaOfField(parameter.Target, reg, customRefs)
+						desc = schema.Description
+						defaultValue = schema.Default
 					default:
 						var ok bool
 						paramType, paramFormat, ok = primitiveSchema(pt)
@@ -763,7 +763,7 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 
 						wknSchemaCore, isWkn := wktSchemas[meth.RequestType.FQMN()]
 						if !isWkn {
-							schema.Ref = fmt.Sprintf("#/definitions1/%s", fullyQualifiedNameToSwaggerName(meth.RequestType.FQMN(), reg))
+							schema.Ref = fmt.Sprintf("#/definitions/%s", fullyQualifiedNameToSwaggerName(meth.RequestType.FQMN(), reg))
 						} else {
 							schema.schemaCore = wknSchemaCore
 
@@ -821,7 +821,7 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 					// well, without a definition
 					wknSchemaCore, isWkn := wktSchemas[meth.ResponseType.FQMN()]
 					if !isWkn {
-						responseSchema.Ref = fmt.Sprintf("#/definitions2/%s", fullyQualifiedNameToSwaggerName(meth.ResponseType.FQMN(), reg))
+						responseSchema.Ref = fmt.Sprintf("#/definitions/%s", fullyQualifiedNameToSwaggerName(meth.ResponseType.FQMN(), reg))
 					} else {
 						responseSchema.schemaCore = wknSchemaCore
 
@@ -843,7 +843,7 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 				if meth.GetServerStreaming() {
 					desc += "(streaming responses)"
 					// Use the streamdefinition which wraps the message in a "result"
-					responseSchema.Ref = strings.Replace(responseSchema.Ref, `#/definitions3/`, `#/x-stream-definitions/`, 1)
+					responseSchema.Ref = strings.Replace(responseSchema.Ref, `#/definitions/`, `#/x-stream-definitions/`, 1)
 				}
 				//
 				//tag := svc.GetName()
@@ -1545,7 +1545,7 @@ func protoJSONSchemaToSwaggerSchemaCore(j *swagger_options.JSONSchema, reg *desc
 	if j.GetRef() != "" {
 		swaggerName := fullyQualifiedNameToSwaggerName(j.GetRef(), reg)
 		if swaggerName != "" {
-			ret.Ref = "#/definitions4/" + swaggerName
+			ret.Ref = "#/definitions/" + swaggerName
 			if refs != nil {
 				refs[j.GetRef()] = struct{}{}
 			}
