@@ -60,7 +60,7 @@ var wktSchemas = map[string]schemaCore{
 		Type:   "boolean",
 		Format: "boolean",
 	},
-	".google.protobuf.Enum": schemaCore{
+	".google.protobuf.EnumValue": schemaCore{
 		Type:   "integer",
 		Format: "int64",
 	},
