@@ -492,8 +492,6 @@ func primitiveSchema(t pbdescriptor.FieldDescriptorProto_Type) (ftype, format st
 		return "integer", "int32", true
 	case pbdescriptor.FieldDescriptorProto_TYPE_SINT64:
 		return "integer", "int64", true
-	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-		return "integer", "int64", true
 	default:
 		return "", "", false
 	}
@@ -695,7 +693,7 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 							return fmt.Errorf("only primitive and well-known types are allowed in path parameters")
 						}
 					case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-						paramType = "string"
+						paramType = "integer"
 						paramFormat = ""
 						enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
 						if err != nil {
