@@ -157,11 +157,11 @@ func queryParams(message *descriptor.Message, field *descriptor.Field, prefix st
 			}
 			if items != nil { // array
 				param.Items = &swaggerItemsObject{
-					Type: "string",
+					Type: "integer",
 					Enum: listEnumNames(enum),
 				}
 			} else {
-				param.Type = "integer"
+				param.Type = "string"
 				param.Enum = listEnumNames(enum)
 				param.Default = getEnumDefault(enum)
 			}
