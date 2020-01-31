@@ -60,6 +60,10 @@ var wktSchemas = map[string]schemaCore{
 		Type:   "boolean",
 		Format: "boolean",
 	},
+	".google.protobuf.Enum": schemaCore{
+		Type:   "integer",
+		Format: "int64",
+	},
 	".google.protobuf.Empty": schemaCore{},
 }
 
@@ -392,7 +396,7 @@ func schemaOfField(f *descriptor.Field, reg *descriptor.Registry, refs refMap) s
 	var props *swaggerSchemaObjectProperties
 
 	switch ft := fd.GetType(); ft {
-	case pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
+	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM, pbdescriptor.FieldDescriptorProto_TYPE_MESSAGE, pbdescriptor.FieldDescriptorProto_TYPE_GROUP:
 		if wktSchema, ok := wktSchemas[fd.GetTypeName()]; ok {
 			core = wktSchema
 
@@ -491,8 +495,6 @@ func primitiveSchema(t pbdescriptor.FieldDescriptorProto_Type) (ftype, format st
 	case pbdescriptor.FieldDescriptorProto_TYPE_SINT32:
 		return "integer", "int32", true
 	case pbdescriptor.FieldDescriptorProto_TYPE_SINT64:
-		return "integer", "int64", true
-	case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
 		return "integer", "int64", true
 	default:
 		return "", "", false
@@ -695,7 +697,7 @@ func renderServices(services []*descriptor.Service, paths swaggerPathsObject, re
 							return fmt.Errorf("only primitive and well-known types are allowed in path parameters")
 						}
 					case pbdescriptor.FieldDescriptorProto_TYPE_ENUM:
-						paramType = "integer"
+						paramType = "string"
 						paramFormat = ""
 						enum, err := reg.LookupEnum("", parameter.Target.GetTypeName())
 						if err != nil {
